@@ -1,0 +1,278 @@
+﻿<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Меблева Фурнітура | KAVA i MEBLI</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f4f4f4;
+      color: #333;
+      overflow-x: hidden;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    h2 {
+      border-bottom: 2px solid #ddd;
+      padding-bottom: 10px;
+    }
+    .products {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+      margin-top: 20px;
+    }
+    .product {
+      background: white;
+      border-radius: 8px;
+      padding: 15px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+    .product img {
+      max-width: 100%;
+      height: 150px;
+      object-fit: contain;
+      margin-bottom: 10px;
+    }
+    .btn {
+      background: #27ae60;
+      color: white;
+      padding: 10px 15px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-block;
+      margin-top: 10px;
+    }
+    .btn:hover {
+      background: #219150;
+    }
+    .quantity {
+      margin-top: 10px;
+    }
+    .order-panel {
+      margin-top: 40px;
+      padding: 20px;
+      background: #ffffff;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    .order-panel h2 {
+      margin-bottom: 10px;
+    }
+    .order-panel input, .order-panel select {
+      width: 100%;
+      padding: 10px;
+      margin-top: 10px;
+      margin-bottom: 10px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+    footer {
+      background: #2c3e50;
+      color: white;
+      text-align: center;
+      padding: 10px;
+      margin-top: 30px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container" id="catalog">
+    <h2>Ручки для меблів</h2>
+    <div class="products">
+      <div class="product">
+        <img src="https://via.placeholder.com/150?text=Ручка+модерн" alt="Ручка модерн" />
+        <h3>Ручка модерн</h3>
+        <p>Ціна: 35 грн</p>
+        <div class="quantity">
+          <input type="number" min="1" value="1" />
+        </div>
+        <a href="#" class="btn">Додати</a>
+      </div>
+      <div class="product">
+        <img src="https://via.placeholder.com/150?text=Ручка+класична" alt="Ручка класична" />
+        <h3>Ручка класична</h3>
+        <p>Ціна: 28 грн</p>
+        <div class="quantity">
+          <input type="number" min="1" value="1" />
+        </div>
+        <a href="#" class="btn">Додати</a>
+      </div>
+    </div>
+    <h2>Направляючі для шухляд</h2>
+    <div class="products">
+      <div class="product">
+        <img src="https://via.placeholder.com/150?text=Телескопічна+пара" alt="Телескопічна пара" />
+        <h3>Телескопічна пара</h3>
+        <p>Ціна: 95 грн</p>
+        <div class="quantity">
+          <input type="number" min="1" value="1" />
+        </div>
+        <a href="#" class="btn">Додати</a>
+      </div>
+      <div class="product">
+        <img src="https://via.placeholder.com/150?text=Кулькова+пара" alt="Кулькова пара" />
+        <h3>Кулькова пара</h3>
+        <p>Ціна: 105 грн</p>
+        <div class="quantity">
+          <input type="number" min="1" value="1" />
+        </div>
+        <a href="#" class="btn">Додати</a>
+      </div>
+    </div>
+
+    <div class="order-panel" id="order">
+      <h2>Ваше замовлення</h2>
+      <p>Після вибору кількості та натискання кнопки "Замовити" — ваше замовлення з’явиться тут.</p>
+      <ul id="order-list"></ul>
+      <p id="total-price"><strong>Загальна сума:</strong> 0 грн</p>
+      <input type="text" id="customer-name" placeholder="Ваше ім'я" />
+      <input type="tel" id="customer-phone" placeholder="Ваш номер телефону" />
+      <select id="delivery-method">
+        <option value="Нова Пошта">Нова Пошта</option>
+        <option value="Самовивіз">Самовивіз</option>
+        <option value="Кур’єр">Кур’єр</option>
+      </select>
+      <button id="submit-order" class="btn">Оформити замовлення</button>
+    </div>
+  </div>
+
+  <footer>
+    <p>&copy; 2025 KAVA i MEBLI. Всі права захищені.</p>
+  </footer>
+
+<script>
+  const cart = {};
+
+  function getProductPrice(name) {
+    const prices = {
+      'Ручка модерн': 35,
+      'Ручка класична': 28,
+      'Телескопічна пара': 95,
+      'Кулькова пара': 105,
+    };
+    return prices[name] || 0;
+  }
+
+  function updateOrderList() {
+    const orderList = document.getElementById('order-list');
+    const totalDisplay = document.getElementById('total-price');
+    orderList.innerHTML = '';
+    let total = 0;
+
+    Object.entries(cart).forEach(([name, quantity]) => {
+      const price = getProductPrice(name);
+      total += price * quantity;
+
+      const li = document.createElement('li');
+      li.innerHTML = `
+        <span><strong>${name}</strong></span> — 
+        <input type="number" min="1" value="${quantity}" data-name="${name}" style="width:60px;"> шт. 
+        <button data-name="${name}" class="remove-btn">✖</button>
+      `;
+      orderList.appendChild(li);
+    });
+
+    totalDisplay.innerHTML = `<strong>Загальна сума:</strong> ${total} грн`;
+  }
+
+  // Обробник додавання товарів
+  document.querySelectorAll('.product').forEach(product => {
+    const btn = product.querySelector('a.btn');
+    btn.addEventListener('click', e => {
+      e.preventDefault();
+      const name = product.querySelector('h3').innerText;
+      const quantity = parseInt(product.querySelector('input[type="number"]').value);
+      if (quantity > 0) {
+        cart[name] = quantity;
+        updateOrderList();
+      }
+    });
+  });
+
+  // Зміна кількості в замовленні
+  document.getElementById('order-list').addEventListener('input', e => {
+    if (e.target.matches('input[type="number"]')) {
+      const name = e.target.dataset.name;
+      const newQty = parseInt(e.target.value);
+      if (newQty > 0) {
+        cart[name] = newQty;
+        updateOrderList();
+      }
+    }
+  });
+
+  // Видалення товару з кошика
+  document.getElementById('order-list').addEventListener('click', e => {
+    if (e.target.classList.contains('remove-btn')) {
+      const name = e.target.dataset.name;
+      delete cart[name];
+      updateOrderList();
+    }
+  });
+
+  // Відправка замовлення в Telegram
+  document.getElementById('submit-order').addEventListener('click', () => {
+    const TOKEN = '7485608477:AAEXw7IJAMyalCElZk-N4crnGX1BNc9u-pw';
+    const CHAT_ID = '7158382875';
+
+    const name = document.getElementById('customer-name').value.trim();
+    const phone = document.getElementById('customer-phone').value.trim();
+    const delivery = document.getElementById('delivery-method').value;
+
+    if (!name || !phone) {
+      alert("Будь ласка, введіть ім’я та номер телефону");
+      return;
+    }
+    if (Object.keys(cart).length === 0) {
+      alert('Кошик порожній!');
+      return;
+    }
+
+    let message = '*Нове замовлення:*%0A';
+    message += `👤 Ім’я: ${name}%0A📞 Телефон: ${phone}%0A🚚 Доставка: ${delivery}%0A%0A`;
+    let total = 0;
+
+    Object.entries(cart).forEach(([name, qty]) => {
+      const price = getProductPrice(name);
+      message += `• ${name} — ${qty} шт. = ${price * qty} грн%0A`;
+      total += price * qty;
+    });
+
+    message += `%0AЗагальна сума: *${total} грн*`;
+
+    fetch(`https://api.telegram.org/bot${TOKEN}/sendMessage`, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        chat_id: CHAT_ID,
+        text: message,
+        parse_mode: 'Markdown'
+      })
+    })
+    .then(res => res.json())
+    .then(data => {
+      if (data.ok) {
+        alert('Замовлення надіслано в Telegram!');
+        Object.keys(cart).forEach(k => delete cart[k]);
+        updateOrderList();
+        document.getElementById('customer-name').value = '';
+        document.getElementById('customer-phone').value = '';
+      } else {
+        alert('Помилка при надсиланні: ' + data.description);
+      }
+    })
+    .catch(() => alert('Помилка з’єднання з Telegram.'));
+  });
+</script>
+</body>
+</html>
